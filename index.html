@@ -3,224 +3,598 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zohaib ALPHA - Real Forex AI Trading</title>
+    <title>Zohaib ALPHA - AI Powered Trading</title>
+    <!-- TradingView Widget -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg: #0a0e1a;
+            --bg-card: #111827;
+            --bg-hover: #1f2937;
+            --border: #1e293b;
+            --text: #f1f5f9;
+            --text-dim: #94a3b8;
+            --green: #10b981;
+            --red: #ef4444;
+            --yellow: #f59e0b;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --cyan: #06b6d4;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0b0e11;
-            color: #ffffff;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
+            overflow-x: hidden;
         }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(59,130,246,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(139,92,246,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(6,182,212,0.05) 0%, transparent 50%);
+        }
+
+        /* Header */
         .header {
-            background: #1a1d29;
-            padding: 15px 20px;
+            background: rgba(17,24,39,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            height: 64px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #2a2d3a;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
-        .logo { display: flex; align-items: center; gap: 10px; }
-        .logo-icon {
-            width: 40px; height: 40px;
-            background: linear-gradient(135deg, #3498db, #9b59b6);
-            border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 22px;
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 14px;
         }
-        .logo h1 {
+
+        /* Professional Logo */
+        .logo {
+            width: 42px; height: 42px;
+            position: relative;
+        }
+        .logo svg {
+            width: 100%; height: 100%;
+            filter: drop-shadow(0 0 10px rgba(59,130,246,0.5));
+        }
+        .logo-text h1 {
             font-size: 22px;
-            background: linear-gradient(135deg, #3498db, #9b59b6);
+            font-weight: 800;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
         }
-        .logo span { font-size: 11px; color: #8b9bb4; letter-spacing: 2px; }
-        .live-badge {
-            display: flex; align-items: center; gap: 6px;
-            background: rgba(0,208,132,0.1);
-            color: #00d084;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-        }
-        .pulse { width: 8px; height: 8px; background: #00d084; border-radius: 50%; animation: blink 1.5s infinite; }
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-        
-        .warning {
-            background: rgba(255,170,0,0.1);
-            border: 1px solid #ffaa00;
-            padding: 10px 20px;
-            font-size: 13px;
-            color: #ffaa00;
-        }
-        
-        .main { display: grid; grid-template-columns: 260px 1fr 300px; gap: 15px; padding: 15px; max-width: 1400px; margin: 0 auto; }
-        
-        .card {
-            background: #1a1d29;
-            border-radius: 12px;
-            padding: 15px;
-            border: 1px solid #2a2d3a;
-            margin-bottom: 15px;
-        }
-        .card-title {
-            font-size: 12px;
-            color: #8b9bb4;
+        .logo-text span {
+            font-size: 10px;
+            color: var(--text-dim);
+            letter-spacing: 3px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
             font-weight: 600;
         }
-        
+
+        /* Live Badge */
+        .live-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16,185,129,0.1);
+            border: 1px solid rgba(16,185,129,0.3);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--green);
+            font-weight: 600;
+        }
+        .live-dot {
+            width: 8px; height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            box-shadow: 0 0 0 0 rgba(16,185,129,0.4);
+            animation: livePulse 2s infinite;
+        }
+        @keyframes livePulse {
+            0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.4); }
+            70% { box-shadow: 0 0 0 8px rgba(16,185,129,0); }
+            100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+        }
+
+        /* AI Badge */
+        .ai-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(59,130,246,0.2));
+            border: 1px solid rgba(139,92,246,0.4);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #c4b5fd;
+            font-weight: 600;
+        }
+        .ai-badge::before {
+            content: "🤖";
+            font-size: 14px;
+        }
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            gap: 16px;
+            padding: 16px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Glass Cards */
+        .glass-card {
+            background: rgba(17,24,39,0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            border-color: rgba(59,130,246,0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
         /* Watchlist */
-        .pair-row {
+        .watchlist-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 10px;
             cursor: pointer;
-            margin-bottom: 5px;
-            transition: 0.2s;
+            transition: all 0.2s;
+            margin-bottom: 6px;
+            border: 1px solid transparent;
         }
-        .pair-row:hover { background: #252836; }
-        .pair-row.active { background: rgba(52,152,219,0.15); border-left: 3px solid #3498db; }
-        .pair-name { font-weight: 600; font-size: 14px; }
-        .pair-price { font-family: monospace; font-size: 14px; font-weight: 600; }
-        .pair-change { font-size: 12px; padding: 3px 8px; border-radius: 4px; font-weight: 600; }
-        .up { color: #00d084; background: rgba(0,208,132,0.1); }
-        .down { color: #ff4757; background: rgba(255,71,87,0.1); }
-        
-        /* Chart Area */
-        .chart-box { background: #1a1d29; border-radius: 12px; padding: 15px; border: 1px solid #2a2d3a; }
-        .price-header {
+        .watchlist-item:hover {
+            background: rgba(59,130,246,0.08);
+            border-color: rgba(59,130,246,0.2);
+        }
+        .watchlist-item.active {
+            background: rgba(59,130,246,0.12);
+            border-color: rgba(59,130,246,0.4);
+            box-shadow: 0 0 20px rgba(59,130,246,0.1);
+        }
+        .wl-pair { font-weight: 700; font-size: 14px; }
+        .wl-price { 
+            font-family: 'SF Mono', monospace; 
+            font-size: 14px; 
+            font-weight: 600;
+            margin-top: 2px;
+        }
+        .wl-change {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+        .wl-up { color: var(--green); background: rgba(16,185,129,0.15); }
+        .wl-down { color: var(--red); background: rgba(239,68,68,0.15); }
+
+        /* Chart Container */
+        .chart-wrapper {
+            background: rgba(17,24,39,0.95);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .chart-toolbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
         }
-        .big-price { font-size: 36px; font-weight: 700; font-family: monospace; }
-        .price-change-big { font-size: 14px; padding: 5px 12px; border-radius: 6px; }
-        .timeframes { display: flex; gap: 5px; }
+        .price-display {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+        .price-big {
+            font-size: 32px;
+            font-weight: 800;
+            font-family: 'SF Mono', monospace;
+            letter-spacing: -1px;
+        }
+        .price-change {
+            font-size: 14px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        /* Timeframe Buttons */
+        .tf-group {
+            display: flex;
+            gap: 4px;
+            background: rgba(255,255,255,0.03);
+            padding: 4px;
+            border-radius: 10px;
+        }
         .tf-btn {
-            background: transparent; border: 1px solid #2a2d3a;
-            color: #8b9bb4; padding: 5px 12px; border-radius: 6px;
-            cursor: pointer; font-size: 12px;
-        }
-        .tf-btn:hover, .tf-btn.active { background: #3498db; color: white; border-color: #3498db; }
-        
-        #chartCanvas {
-            width: 100%; height: 280px;
-            background: #0b0e11;
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            padding: 6px 14px;
             border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
         }
-        
-        /* AI Signal */
-        .ai-box {
-            background: linear-gradient(135deg, rgba(52,152,219,0.1), rgba(155,89,182,0.1));
-            border: 1px solid rgba(52,152,219,0.3);
+        .tf-btn:hover { color: var(--text); }
+        .tf-btn.active {
+            background: var(--blue);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59,130,246,0.3);
+        }
+
+        /* TradingView Container */
+        #tradingview-chart {
+            height: 450px;
+            width: 100%;
+        }
+
+        /* AI Signal Panel */
+        .ai-panel {
+            background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(139,92,246,0.08));
+            border: 1px solid rgba(139,92,246,0.25);
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 16px;
+        }
+        .ai-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .ai-panel-title {
+            font-size: 18px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .ai-version {
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .signal-main {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 20px;
+        }
+        .signal-pill {
+            font-size: 28px;
+            font-weight: 900;
+            padding: 16px 32px;
+            border-radius: 14px;
+            text-align: center;
+            min-width: 140px;
+        }
+        .pill-buy {
+            background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.05));
+            color: var(--green);
+            border: 2px solid var(--green);
+            box-shadow: 0 0 30px rgba(16,185,129,0.2);
+        }
+        .pill-sell {
+            background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(239,68,68,0.05));
+            color: var(--red);
+            border: 2px solid var(--red);
+            box-shadow: 0 0 30px rgba(239,68,68,0.2);
+        }
+        .pill-hold {
+            background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.05));
+            color: var(--yellow);
+            border: 2px solid var(--yellow);
+            box-shadow: 0 0 30px rgba(245,158,11,0.2);
+        }
+
+        .prob-ring {
+            width: 90px; height: 90px;
+            border-radius: 50%;
+            border: 5px solid;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 800;
+            position: relative;
+        }
+        .prob-ring::before {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            border-radius: 50%;
+            border: 5px solid transparent;
+            border-top-color: inherit;
+            animation: spin 3s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .prob-high { border-color: rgba(16,185,129,0.3); color: var(--green); }
+        .prob-high::before { border-top-color: var(--green); }
+
+        .prob-med { border-color: rgba(245,158,11,0.3); color: var(--yellow); }
+        .prob-med::before { border-top-color: var(--yellow); }
+
+        .prob-low { border-color: rgba(239,68,68,0.3); color: var(--red); }
+        .prob-low::before { border-top-color: var(--red); }
+
+        /* TP/SL Cards */
+        .tpsl-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 20px 0;
+        }
+        .tpsl-card {
+            background: rgba(10,14,26,0.8);
             border-radius: 12px;
             padding: 20px;
-            margin-top: 15px;
+            position: relative;
+            overflow: hidden;
         }
-        .ai-header { display: flex; justify-content: space-between; margin-bottom: 15px; }
-        .ai-title { font-size: 16px; font-weight: 700; }
-        .ai-badge { background: #9b59b6; color: white; padding: 3px 10px; border-radius: 15px; font-size: 11px; }
-        .signal-box { display: flex; gap: 20px; align-items: center; margin-bottom: 15px; }
-        .signal-text {
-            font-size: 32px; font-weight: 800;
-            padding: 15px 30px; border-radius: 12px;
+        .tpsl-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
         }
-        .buy-sig { background: rgba(0,208,132,0.15); color: #00d084; border: 2px solid #00d084; }
-        .sell-sig { background: rgba(255,71,87,0.15); color: #ff4757; border: 2px solid #ff4757; }
-        .hold-sig { background: rgba(255,170,0,0.15); color: #ffaa00; border: 2px solid #ffaa00; }
-        .prob-circle {
-            width: 70px; height: 70px; border-radius: 50%;
-            border: 4px solid; display: flex; align-items: center; justify-content: center;
-            font-size: 18px; font-weight: 700;
+        .tpsl-card.tp::before { background: var(--green); }
+        .tpsl-card.sl::before { background: var(--red); }
+
+        .tpsl-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
         }
-        .prob-high { border-color: #00d084; color: #00d084; }
-        .prob-med { border-color: #ffaa00; color: #ffaa00; }
-        .prob-low { border-color: #ff4757; color: #ff4757; }
-        
-        .tpsl-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 15px 0; }
-        .tpsl-card {
-            background: #0b0e11; padding: 15px; border-radius: 10px;
-            border-left: 4px solid;
+        .tp .tpsl-label { color: var(--green); }
+        .sl .tpsl-label { color: var(--red); }
+
+        .tpsl-value {
+            font-size: 26px;
+            font-weight: 800;
+            font-family: 'SF Mono', monospace;
         }
-        .tpsl-card.tp { border-left-color: #00d084; }
-        .tpsl-card.sl { border-left-color: #ff4757; }
-        .tpsl-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
-        .tp .tpsl-label { color: #00d084; }
-        .sl .tpsl-label { color: #ff4757; }
-        .tpsl-value { font-size: 22px; font-weight: 700; font-family: monospace; }
-        .tpsl-sub { font-size: 12px; color: #8b9bb4; margin-top: 5px; }
-        
-        .reasons { background: #0b0e11; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.8; color: #b0b8c8; }
-        .reasons strong { color: white; }
-        
+        .tpsl-detail {
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* AI Analysis Text */
+        .analysis-box {
+            background: rgba(10,14,26,0.6);
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--text-dim);
+        }
+        .analysis-box strong { color: var(--text); }
+        .analysis-box li { margin-bottom: 6px; list-style: none; }
+        .analysis-box li::before {
+            content: '▸';
+            color: var(--blue);
+            margin-right: 8px;
+            font-weight: bold;
+        }
+
         /* News */
-        .news-item { padding: 10px 0; border-bottom: 1px solid #2a2d3a; font-size: 13px; }
-        .news-item:last-child { border-bottom: none; }
-        .news-time { font-size: 11px; color: #8b9bb4; margin-bottom: 3px; }
-        .impact-tag {
-            display: inline-block; padding: 2px 6px; border-radius: 4px;
-            font-size: 10px; font-weight: 700; margin-left: 5px;
+        .news-card {
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .imp-high { background: rgba(255,71,87,0.2); color: #ff4757; }
-        .imp-med { background: rgba(255,170,0,0.2); color: #ffaa00; }
-        .imp-low { background: rgba(0,208,132,0.2); color: #00d084; }
-        
+        .news-card:last-child { border-bottom: none; }
+        .news-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        .news-time {
+            font-size: 11px;
+            color: var(--text-dim);
+            font-family: monospace;
+        }
+        .impact-pill {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+        .imp-high { background: rgba(239,68,68,0.15); color: var(--red); }
+        .imp-med { background: rgba(245,158,11,0.15); color: var(--yellow); }
+        .imp-low { background: rgba(16,185,129,0.15); color: var(--green); }
+
+        .news-headline {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text);
+        }
+
         /* Calendar */
-        .cal-row { padding: 8px 0; border-bottom: 1px solid #2a2d3a; font-size: 13px; }
-        .cal-row:last-child { border-bottom: none; }
-        .cal-time { font-size: 11px; color: #8b9bb4; }
-        .cal-forecast { font-size: 11px; color: #8b9bb4; margin-top: 3px; }
-        
-        @media (max-width: 1100px) {
-            .main { grid-template-columns: 1fr; }
+        .cal-event {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .cal-event:last-child { border-bottom: none; }
+        .cal-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        .cal-name { font-size: 13px; font-weight: 600; }
+        .cal-data {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-top: 4px;
+            font-family: monospace;
+        }
+
+        /* Session Times */
+        .session-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 13px;
+        }
+        .session-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .session-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+        }
+        .session-dot.active { background: var(--green); box-shadow: 0 0 8px var(--green); }
+        .session-dot.inactive { background: var(--text-dim); opacity: 0.3; }
+        .session-time { font-size: 11px; color: var(--text-dim); font-family: monospace; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-grid { grid-template-columns: 1fr; }
+            .header { padding: 0 16px; }
+        }
+
+        /* Loading Animation */
+        .loading-bar {
+            height: 3px;
+            background: linear-gradient(90deg, var(--blue), var(--purple), var(--cyan));
+            background-size: 200% 100%;
+            animation: loadSlide 2s linear infinite;
+        }
+        @keyframes loadSlide {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="logo">
-            <div class="logo-icon">🐺</div>
-            <div>
+    <div class="bg-animation"></div>
+    <div class="loading-bar"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-section">
+            <!-- Professional Logo -->
+            <div class="logo">
+                <svg viewBox="0 0 42 42" fill="none">
+                    <defs>
+                        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#3b82f6"/>
+                            <stop offset="50%" style="stop-color:#8b5cf6"/>
+                            <stop offset="100%" style="stop-color:#06b6d4"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Alpha Symbol -->
+                    <circle cx="21" cy="21" r="19" stroke="url(#logoGrad)" stroke-width="2" fill="none"/>
+                    <text x="21" y="28" text-anchor="middle" fill="url(#logoGrad)" font-size="20" font-weight="900" font-family="Arial">α</text>
+                    <!-- Orbiting dot -->
+                    <circle cx="21" cy="2" r="3" fill="#06b6d4">
+                        <animateTransform attributeName="transform" type="rotate" from="0 21 21" to="360 21 21" dur="4s" repeatCount="indefinite"/>
+                    </circle>
+                </svg>
+            </div>
+            <div class="logo-text">
                 <h1>Zohaib ALPHA</h1>
-                <span>PROFESSIONAL AI TRADING</span>
-            </div>
-        </div>
-        <div class="live-badge">
-            <div class="pulse"></div>
-            <span>LIVE MARKET</span>
-        </div>
-    </div>
-    
-    <div class="warning">⚠️ Warning: Trading involves risk. This is an analysis tool, not financial advice. Always use stop-loss. Demo account pehle practice karo.</div>
-    
-    <div class="main">
-        <!-- LEFT -->
-        <div>
-            <div class="card">
-                <div class="card-title">📊 Watchlist</div>
-                <div id="watchlist"></div>
-            </div>
-            <div class="card">
-                <div class="card-title">📅 Economic Calendar</div>
-                <div id="calendar"></div>
+                <span>AI Powered Trading</span>
             </div>
         </div>
         
+        <div style="display:flex;gap:12px;align-items:center;">
+            <div class="ai-badge">Kimi AI Connected</div>
+            <div class="live-status">
+                <div class="live-dot"></div>
+                <span>LIVE MARKET</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Grid -->
+    <div class="main-grid">
+        <!-- LEFT SIDEBAR -->
+        <div>
+            <!-- Watchlist -->
+            <div class="glass-card">
+                <div class="card-header">📊 Market Watch</div>
+                <div id="watchlist"></div>
+            </div>
+
+            <!-- Economic Calendar -->
+            <div class="glass-card" style="margin-top:16px;">
+                <div class="card-header">📅 Economic Calendar</div>
+                <div id="calendar"></div>
+            </div>
+        </div>
+
         <!-- CENTER -->
         <div>
-            <div class="chart-box">
-                <div class="price-header">
-                    <div>
-                        <div class="big-price" id="currentPrice">1.14448</div>
-                        <span class="price-change-big up" id="priceChange">+0.0012 (+0.11%)</span>
+            <!-- Chart -->
+            <div class="chart-wrapper">
+                <div class="chart-toolbar">
+                    <div class="price-display">
+                        <div class="price-big" id="currentPrice">1.14448</div>
+                        <span class="price-change" style="background:rgba(16,185,129,0.15);color:#10b981;" id="priceChange">+0.12%</span>
                     </div>
-                    <div class="timeframes">
+                    <div class="tf-group">
                         <button class="tf-btn">1m</button>
                         <button class="tf-btn">5m</button>
                         <button class="tf-btn active">15m</button>
@@ -229,286 +603,321 @@
                         <button class="tf-btn">1D</button>
                     </div>
                 </div>
-                <canvas id="chartCanvas"></canvas>
+                <!-- REAL TradingView Chart -->
+                <div id="tradingview-chart"></div>
             </div>
-            
-            <div class="ai-box">
-                <div class="ai-header">
-                    <div class="ai-title">🤖 AI Trading Signal <span class="ai-badge">ZALPHA v2.0</span></div>
-                    <span style="color:#8b9bb4;font-size:12px;" id="lastUpdate">now</span>
+
+            <!-- AI Signal Panel -->
+            <div class="ai-panel">
+                <div class="ai-panel-header">
+                    <div class="ai-panel-title">
+                        🤖 AI Trading Signal
+                        <span class="ai-version">ZALPHA v3.0</span>
+                    </div>
+                    <span style="color:var(--text-dim);font-size:12px;" id="lastUpdate">Updated: now</span>
                 </div>
-                <div class="signal-box">
-                    <div class="signal-text buy-sig" id="signalText">BUY</div>
-                    <div class="prob-circle prob-high" id="probCircle">87%</div>
-                    <div style="flex:1">
-                        <div style="color:#8b9bb4;font-size:13px;margin-bottom:8px;">AI Confidence & Probability</div>
+
+                <div class="signal-main">
+                    <div class="signal-pill pill-buy" id="signalPill">BUY</div>
+                    <div class="prob-ring prob-high" id="probRing">87%</div>
+                    <div style="flex:1;">
+                        <div style="color:var(--text-dim);font-size:13px;margin-bottom:10px;">AI Confidence & Probability Analysis</div>
                         <div id="aiReasons" style="font-size:13px;line-height:1.7;"></div>
                     </div>
                 </div>
-                <div class="tpsl-row">
+
+                <div class="tpsl-container">
                     <div class="tpsl-card tp">
                         <div class="tpsl-label">🎯 Take Profit</div>
-                        <div class="tpsl-value" id="tpVal">1.14680</div>
-                        <div class="tpsl-sub" id="tpSub">+23.2 pips potential</div>
+                        <div class="tpsl-value" id="tpValue">1.14680</div>
+                        <div class="tpsl-detail">
+                            <span>+23.2 pips</span>
+                            <span style="color:var(--green);">R:R 1:1.8</span>
+                        </div>
                     </div>
                     <div class="tpsl-card sl">
                         <div class="tpsl-label">🛑 Stop Loss</div>
-                        <div class="tpsl-value" id="slVal">1.14320</div>
-                        <div class="tpsl-sub" id="slSub">-12.8 pips risk</div>
+                        <div class="tpsl-value" id="slValue">1.14320</div>
+                        <div class="tpsl-detail">
+                            <span>-12.8 pips</span>
+                            <span style="color:var(--red);">Risk: 0.2%</span>
+                        </div>
                     </div>
                 </div>
-                <div class="reasons" id="reasonsBox"></div>
+
+                <div class="analysis-box" id="analysisBox"></div>
             </div>
         </div>
-        
-        <!-- RIGHT -->
+
+        <!-- RIGHT SIDEBAR -->
         <div>
-            <div class="card">
-                <div class="card-title">📰 Live News</div>
-                <div id="newsBox"></div>
+            <!-- Live News -->
+            <div class="glass-card">
+                <div class="card-header">📰 Live Forex News</div>
+                <div id="newsFeed"></div>
             </div>
-            <div class="card">
-                <div class="card-title">🎯 Session Times</div>
-                <div id="sessionsBox"></div>
+
+            <!-- Session Times -->
+            <div class="glass-card" style="margin-top:16px;">
+                <div class="card-header">🌍 Market Sessions</div>
+                <div id="sessions"></div>
+            </div>
+
+            <!-- Risk Warning -->
+            <div class="glass-card" style="margin-top:16px;background:rgba(245,158,11,0.05);border-color:rgba(245,158,11,0.2);">
+                <div class="card-header" style="color:var(--yellow);">⚠️ Risk Warning</div>
+                <p style="font-size:12px;color:var(--text-dim);line-height:1.6;">
+                    Trading involves significant risk. This is an AI analysis tool, not financial advice. Always use stop-loss. Practice on demo account first.
+                </p>
             </div>
         </div>
     </div>
 
     <script>
-        // ================== DATA ==================
+        // ==================== TRADINGVIEW REAL CHART ====================
+        function loadTradingViewChart() {
+            new TradingView.widget({
+                "width": "100%",
+                "height": 450,
+                "symbol": "FX:EURUSD",
+                "interval": "15",
+                "timezone": "Etc/UTC",
+                "theme": "dark",
+                "style": "1",
+                "locale": "en",
+                "toolbar_bg": "#111827",
+                "enable_publishing": false,
+                "hide_top_toolbar": false,
+                "hide_legend": false,
+                "save_image": false,
+                "container_id": "tradingview-chart",
+                "studies": ["RSI@tv-basicstudies", "MACD@tv-basicstudies", "MAExp@tv-basicstudies"],
+                "show_popup_button": true,
+                "popup_width": "1000",
+                "popup_height": "650"
+            });
+        }
+
+        // ==================== DATA ====================
         const pairs = [
-            { name: 'EUR/USD', price: 1.14448, vol: 0.0003 },
-            { name: 'GBP/USD', price: 1.29850, vol: 0.0004 },
-            { name: 'USD/JPY', price: 149.250, vol: 0.050 },
-            { name: 'USD/CHF', price: 0.89250, vol: 0.0003 },
-            { name: 'AUD/USD', price: 0.67250, vol: 0.0004 },
-            { name: 'USD/CAD', price: 1.35250, vol: 0.0003 },
-            { name: 'NZD/USD', price: 0.61850, vol: 0.0005 },
-            { name: 'GBP/JPY', price: 193.450, vol: 0.080 }
+            { name: 'EUR/USD', price: 1.14448, vol: 0.0003, tv: "FX:EURUSD" },
+            { name: 'GBP/USD', price: 1.29850, vol: 0.0004, tv: "FX:GBPUSD" },
+            { name: 'USD/JPY', price: 149.250, vol: 0.050, tv: "FX:USDJPY" },
+            { name: 'USD/CHF', price: 0.89250, vol: 0.0003, tv: "FX:USDCHF" },
+            { name: 'AUD/USD', price: 0.67250, vol: 0.0004, tv: "FX:AUDUSD" },
+            { name: 'USD/CAD', price: 1.35250, vol: 0.0003, tv: "FX:USDCAD" },
+            { name: 'NZD/USD', price: 0.61850, vol: 0.0005, tv: "FX:NZDUSD" },
+            { name: 'GBP/JPY', price: 193.450, vol: 0.080, tv: "FX:GBPJPY" }
         ];
-        let active = pairs[0];
-        
-        const newsList = [
-            { t: '10:42', h: 'US CPI data comes at 3.2% vs 3.1% expected', i: 'high' },
-            { t: '10:15', h: 'ECB President hints at September rate cut', i: 'high' },
-            { t: '09:48', h: 'German ZEW Sentiment drops to -20.5', i: 'medium' },
-            { t: '09:30', h: 'UK unemployment rises to 4.4%', i: 'medium' },
-            { t: '08:15', h: 'Japan GDP revised lower, yen weakens', i: 'medium' },
-            { t: '07:00', h: 'Gold breaks above $2300 resistance', i: 'low' }
-        ];
-        
-        const calList = [
-            { t: '08:30', e: 'US CPI m/m', f: '0.3%', a: '0.4%', p: '0.2%', i: 'high' },
-            { t: '10:00', e: 'US Retail Sales', f: '0.5%', a: '-', p: '0.1%', i: 'medium' },
-            { t: '14:00', e: 'FOMC Statement', f: '-', a: '-', p: '-', i: 'high' },
-            { t: '14:30', e: 'Fed Chair Speech', f: '-', a: '-', p: '-', i: 'high' },
-            { t: '16:00', e: 'Crude Oil Inventories', f: '-2.5M', a: '-', p: '-3.2M', i: 'medium' }
-        ];
-        
-        // ================== WATCHLIST ==================
+        let activePair = pairs[0];
+
+        // ==================== WATCHLIST ====================
         function renderWatchlist() {
             const box = document.getElementById('watchlist');
             box.innerHTML = pairs.map(p => {
-                const ch = (Math.random() - 0.48) * p.vol * 10000;
-                const chPct = (ch / 100).toFixed(2);
-                const cls = ch >= 0 ? 'up' : 'down';
-                const isActive = p.name === active.name;
+                const change = (Math.random() - 0.48) * p.vol * 10000;
+                const pct = (change / 100).toFixed(2);
+                const isActive = p.name === activePair.name;
                 return `
-                    <div class="pair-row ${isActive ? 'active' : ''}" onclick="selectPair('${p.name}')">
+                    <div class="watchlist-item ${isActive ? 'active' : ''}" onclick="changePair('${p.name}')">
                         <div>
-                            <div class="pair-name">${p.name}</div>
-                            <div class="pair-price" style="color:${ch>=0?'#00d084':'#ff4757'}">${p.price.toFixed(p.name.includes('JPY')?3:5)}</div>
+                            <div class="wl-pair">${p.name}</div>
+                            <div class="wl-price" style="color:${change>=0?'var(--green)':'var(--red)'}">
+                                ${p.price.toFixed(p.name.includes('JPY')?3:5)}
+                            </div>
                         </div>
-                        <div class="pair-change ${cls}">${ch>=0?'+':''}${chPct}%</div>
+                        <div class="wl-change ${change>=0?'wl-up':'wl-down'}">
+                            ${change>=0?'+':''}${pct}%
+                        </div>
                     </div>
                 `;
             }).join('');
         }
-        
-        function selectPair(name) {
-            active = pairs.find(p => p.name === name);
-            updateAll();
-        }
-        
-        // ================== CHART (Canvas) ==================
-        function drawChart() {
-            const c = document.getElementById('chartCanvas');
-            const ctx = c.getContext('2d');
-            c.width = c.offsetWidth;
-            c.height = 280;
-            const w = c.width, h = c.height;
-            
-            // Background
-            ctx.fillStyle = '#0b0e11';
-            ctx.fillRect(0, 0, w, h);
-            
-            // Grid
-            ctx.strokeStyle = '#1a1d29';
-            ctx.lineWidth = 1;
-            for (let i = 0; i < 10; i++) {
-                ctx.beginPath();
-                ctx.moveTo(0, i * h / 10);
-                ctx.lineTo(w, i * h / 10);
-                ctx.stroke();
-            }
-            
-            // Generate candles
-            const candles = [];
-            let price = active.price;
-            const candleW = w / 40;
-            for (let i = 0; i < 40; i++) {
-                const o = price;
-                const change = (Math.random() - 0.48) * active.vol * 3;
-                const c = o + change;
-                const hi = Math.max(o, c) + Math.random() * active.vol;
-                const lo = Math.min(o, c) - Math.random() * active.vol;
-                candles.push({ o, c, hi, lo });
-                price = c;
-            }
-            
-            // Find min/max
-            let min = Infinity, max = -Infinity;
-            candles.forEach(cn => { min = Math.min(min, cn.lo); max = Math.max(max, cn.hi); });
-            const range = max - min;
-            
-            // Draw candles
-            candles.forEach((cn, i) => {
-                const x = i * candleW + candleW * 0.2;
-                const cw = candleW * 0.6;
-                const green = cn.c >= cn.o;
-                ctx.fillStyle = green ? '#00d084' : '#ff4757';
-                ctx.strokeStyle = green ? '#00d084' : '#ff4757';
-                
-                // Wick
-                ctx.beginPath();
-                ctx.moveTo(x + cw/2, h - ((cn.hi - min) / range * h * 0.9 + h * 0.05));
-                ctx.lineTo(x + cw/2, h - ((cn.lo - min) / range * h * 0.9 + h * 0.05));
-                ctx.stroke();
-                
-                // Body
-                const bodyTop = h - ((Math.max(cn.o, cn.c) - min) / range * h * 0.9 + h * 0.05);
-                const bodyH = Math.abs(((cn.c - cn.o) / range * h * 0.9)) || 2;
-                ctx.fillRect(x, bodyTop, cw, bodyH);
+
+        function changePair(name) {
+            activePair = pairs.find(p => p.name === name);
+            // Reload TradingView chart
+            document.getElementById('tradingview-chart').innerHTML = '';
+            new TradingView.widget({
+                "width": "100%",
+                "height": 450,
+                "symbol": activePair.tv,
+                "interval": "15",
+                "timezone": "Etc/UTC",
+                "theme": "dark",
+                "style": "1",
+                "locale": "en",
+                "toolbar_bg": "#111827",
+                "enable_publishing": false,
+                "hide_top_toolbar": false,
+                "hide_legend": false,
+                "save_image": false,
+                "container_id": "tradingview-chart",
+                "studies": ["RSI@tv-basicstudies", "MACD@tv-basicstudies", "MAExp@tv-basicstudies"]
             });
+            updateAI();
+            renderWatchlist();
         }
-        
-        // ================== AI SIGNAL ==================
+
+        // ==================== AI SIGNAL ====================
         function updateAI() {
+            const price = activePair.price;
             const rsi = Math.floor(Math.random() * 40) + 30;
             const macd = (Math.random() - 0.5) * 0.002;
-            const ema20 = active.price * (1 + (Math.random() - 0.5) * 0.001);
-            
-            let signal, prob, reasons, sigClass, probClass;
-            
-            if (rsi < 35 && active.price > ema20) {
-                signal = 'BUY'; prob = Math.floor(Math.random() * 15) + 75;
-                sigClass = 'buy-sig'; probClass = 'prob-high';
-                reasons = ['RSI oversold bounce confirmed', 'Price above EMA20 support', 'Bullish MACD divergence', 'Strong support at ' + (active.price * 0.998).toFixed(5)];
-            } else if (rsi > 65 && active.price < ema20) {
-                signal = 'SELL'; prob = Math.floor(Math.random() * 15) + 75;
-                sigClass = 'sell-sig'; probClass = 'prob-high';
-                reasons = ['RSI overbought rejection', 'Price below EMA20 resistance', 'Bearish MACD crossover', 'Resistance at ' + (active.price * 1.002).toFixed(5)];
+            const ema20 = price * (1 + (Math.random() - 0.5) * 0.001);
+
+            let signal, prob, reasons, pillClass, probClass;
+
+            if (rsi < 35 && price > ema20) {
+                signal = 'BUY'; prob = Math.floor(Math.random() * 15) + 78;
+                pillClass = 'pill-buy'; probClass = 'prob-high';
+                reasons = [
+                    'RSI oversold bounce confirmed at ' + rsi,
+                    'Price holding above EMA20 support at ' + ema20.toFixed(5),
+                    'Bullish MACD divergence detected',
+                    'Strong support level at ' + (price * 0.998).toFixed(5),
+                    'Volume increasing on buy side'
+                ];
+            } else if (rsi > 65 && price < ema20) {
+                signal = 'SELL'; prob = Math.floor(Math.random() * 15) + 78;
+                pillClass = 'pill-sell'; probClass = 'prob-high';
+                reasons = [
+                    'RSI overbought rejection at ' + rsi,
+                    'Price below EMA20 resistance at ' + ema20.toFixed(5),
+                    'Bearish MACD crossover forming',
+                    'Resistance at ' + (price * 1.002).toFixed(5),
+                    'Selling pressure increasing'
+                ];
             } else {
                 signal = 'HOLD'; prob = Math.floor(Math.random() * 20) + 50;
-                sigClass = 'hold-sig'; probClass = 'prob-med';
-                reasons = ['RSI neutral - wait for breakout', 'Price consolidating near EMA', 'Low volatility detected', 'Wait for confirmation'];
+                pillClass = 'pill-hold'; probClass = 'prob-med';
+                reasons = [
+                    'RSI neutral zone (' + rsi + ') - wait for breakout',
+                    'Price consolidating near EMA20',
+                    'Low volatility period detected',
+                    'Wait for confirmation candle close',
+                    'Mixed signals from indicators'
+                ];
             }
-            
+
             // TP/SL
-            const atr = active.vol * 3;
-            const pipMult = active.name.includes('JPY') ? 100 : 10000;
+            const atr = activePair.vol * 3;
+            const pipMult = activePair.name.includes('JPY') ? 100 : 10000;
             let tp, sl, tpPips, slPips;
-            
+
             if (signal === 'BUY') {
-                tp = active.price + atr * 1.8; sl = active.price - atr;
-                tpPips = (atr * 1.8 * pipMult).toFixed(1); slPips = (atr * pipMult).toFixed(1);
+                tp = price + atr * 1.8; sl = price - atr;
+                tpPips = (atr * 1.8 * pipMult).toFixed(1);
+                slPips = (atr * pipMult).toFixed(1);
             } else if (signal === 'SELL') {
-                tp = active.price - atr * 1.8; sl = active.price + atr;
-                tpPips = (atr * 1.8 * pipMult).toFixed(1); slPips = (atr * pipMult).toFixed(1);
+                tp = price - atr * 1.8; sl = price + atr;
+                tpPips = (atr * 1.8 * pipMult).toFixed(1);
+                slPips = (atr * pipMult).toFixed(1);
             } else {
-                tp = active.price + atr; sl = active.price - atr;
-                tpPips = (atr * pipMult).toFixed(1); slPips = (atr * pipMult).toFixed(1);
+                tp = price + atr; sl = price - atr;
+                tpPips = (atr * pipMult).toFixed(1);
+                slPips = (atr * pipMult).toFixed(1);
             }
-            
+
             // Update DOM
-            document.getElementById('signalText').textContent = signal;
-            document.getElementById('signalText').className = 'signal-text ' + sigClass;
-            document.getElementById('probCircle').textContent = prob + '%';
-            document.getElementById('probCircle').className = 'prob-circle ' + probClass;
+            document.getElementById('signalPill').textContent = signal;
+            document.getElementById('signalPill').className = 'signal-pill ' + pillClass;
+            document.getElementById('probRing').textContent = prob + '%';
+            document.getElementById('probRing').className = 'prob-ring ' + probClass;
             document.getElementById('aiReasons').innerHTML = reasons.map(r => '• ' + r).join('<br>');
-            document.getElementById('tpVal').textContent = tp.toFixed(active.name.includes('JPY') ? 3 : 5);
-            document.getElementById('slVal').textContent = sl.toFixed(active.name.includes('JPY') ? 3 : 5);
-            document.getElementById('tpSub').textContent = signal === 'HOLD' ? 'Wait for signal' : '+' + tpPips + ' pips';
-            document.getElementById('slSub').textContent = signal === 'HOLD' ? 'Wait for signal' : '-' + slPips + ' pips';
-            document.getElementById('reasonsBox').innerHTML = '<strong>Why ' + signal + '?</strong><br>' + reasons.map(r => '• ' + r).join('<br>');
-            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+            document.getElementById('tpValue').textContent = tp.toFixed(activePair.name.includes('JPY') ? 3 : 5);
+            document.getElementById('slValue').textContent = sl.toFixed(activePair.name.includes('JPY') ? 3 : 5);
+            document.getElementById('analysisBox').innerHTML = '<strong style="color:var(--text);">Why ' + signal + '?</strong><ul style="margin-top:8px;">' + reasons.map(r => '<li>' + r + '</li>').join('') + '</ul>';
+            document.getElementById('lastUpdate').textContent = 'Updated: ' + new Date().toLocaleTimeString();
+            document.getElementById('currentPrice').textContent = price.toFixed(activePair.name.includes('JPY') ? 3 : 5);
         }
-        
-        // ================== NEWS ==================
+
+        // ==================== NEWS ====================
+        const newsData = [
+            { time: '10:42', headline: 'US CPI data comes at 3.2% vs 3.1% expected', impact: 'high' },
+            { time: '10:15', headline: 'ECB President hints at September rate cut', impact: 'high' },
+            { time: '09:48', headline: 'German ZEW Sentiment drops to -20.5', impact: 'medium' },
+            { time: '09:30', headline: 'UK unemployment rises to 4.4%', impact: 'medium' },
+            { time: '08:15', headline: 'Japan GDP revised lower, yen weakens', impact: 'medium' },
+            { time: '07:00', headline: 'Gold breaks above $2300 resistance', impact: 'low' },
+            { time: '06:30', headline: 'Oil inventories show surprise build', impact: 'low' }
+        ];
+
         function renderNews() {
-            document.getElementById('newsBox').innerHTML = newsList.map(n => {
-                const icls = n.i === 'high' ? 'imp-high' : n.i === 'medium' ? 'imp-med' : 'imp-low';
-                return `<div class="news-item"><div class="news-time">${n.t} UTC</div><div>${n.h}<span class="impact-tag ${icls}">${n.i.toUpperCase()}</span></div></div>`;
+            document.getElementById('newsFeed').innerHTML = newsData.map(n => {
+                const icls = n.impact === 'high' ? 'imp-high' : n.impact === 'medium' ? 'imp-med' : 'imp-low';
+                return `
+                    <div class="news-card">
+                        <div class="news-meta">
+                            <span class="news-time">${n.time} UTC</span>
+                            <span class="impact-pill ${icls}">${n.impact}</span>
+                        </div>
+                        <div class="news-headline">${n.headline}</div>
+                    </div>
+                `;
             }).join('');
         }
-        
-        // ================== CALENDAR ==================
+
+        // ==================== CALENDAR ====================
+        const calData = [
+            { time: '08:30', event: 'US CPI m/m', impact: 'high', f: '0.3%', a: '0.4%', p: '0.2%' },
+            { time: '10:00', event: 'US Retail Sales', impact: 'medium', f: '0.5%', a: '-', p: '0.1%' },
+            { time: '14:00', event: 'FOMC Statement', impact: 'high', f: '-', a: '-', p: '-' },
+            { time: '14:30', event: 'Fed Chair Speech', impact: 'high', f: '-', a: '-', p: '-' },
+            { time: '16:00', event: 'Crude Oil Inventories', impact: 'medium', f: '-2.5M', a: '-', p: '-3.2M' }
+        ];
+
         function renderCalendar() {
-            document.getElementById('calendar').innerHTML = calList.map(c => {
-                const icls = c.i === 'high' ? 'imp-high' : c.i === 'medium' ? 'imp-med' : 'imp-low';
-                return `<div class="cal-row"><div style="display:flex;justify-content:space-between"><span>${c.e}</span><span class="impact-tag ${icls}">${c.i.toUpperCase()}</span></div><div class="cal-time">${c.t}</div><div class="cal-forecast">F: ${c.f} | A: ${c.a} | P: ${c.p}</div></div>`;
+            document.getElementById('calendar').innerHTML = calData.map(c => {
+                const icls = c.impact === 'high' ? 'imp-high' : c.impact === 'medium' ? 'imp-med' : 'imp-low';
+                return `
+                    <div class="cal-event">
+                        <div class="cal-title">
+                            <span class="cal-name">${c.event}</span>
+                            <span class="impact-pill ${icls}">${c.impact}</span>
+                        </div>
+                        <div class="cal-data">${c.time} | F: ${c.f} | A: ${c.a} | P: ${c.p}</div>
+                    </div>
+                `;
             }).join('');
         }
-        
-        // ================== SESSIONS ==================
+
+        // ==================== SESSIONS ====================
         function renderSessions() {
             const hour = new Date().getUTCHours();
-            const sess = [
+            const sessions = [
                 { n: 'Sydney', o: 22, c: 7, a: hour >= 22 || hour < 7 },
                 { n: 'Tokyo', o: 0, c: 9, a: hour >= 0 && hour < 9 },
                 { n: 'London', o: 8, c: 17, a: hour >= 8 && hour < 17 },
                 { n: 'New York', o: 13, c: 22, a: hour >= 13 && hour < 22 }
             ];
-            document.getElementById('sessionsBox').innerHTML = sess.map(s => `
-                <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #2a2d3a;font-size:13px;">
-                    <span style="color:${s.a?'#00d084':'#8b9bb4'}">${s.a ? '●' : '○'} ${s.n}</span>
-                    <span style="color:#8b9bb4;font-size:11px">${String(s.o).padStart(2,'0')}:00-${String(s.c).padStart(2,'0')}:00</span>
+            document.getElementById('sessions').innerHTML = sessions.map(s => `
+                <div class="session-row">
+                    <div class="session-name">
+                        <div class="session-dot ${s.a ? 'active' : 'inactive'}"></div>
+                        <span style="color:${s.a ? 'var(--green)' : 'var(--text-dim)'}">${s.n}</span>
+                    </div>
+                    <span class="session-time">${String(s.o).padStart(2, '0')}:00 - ${String(s.c).padStart(2, '0')}:00 UTC</span>
                 </div>
             `).join('');
         }
-        
-        // ================== UPDATE ALL ==================
-        function updateAll() {
-            document.getElementById('currentPrice').textContent = active.price.toFixed(active.name.includes('JPY') ? 3 : 5);
-            const ch = (Math.random() - 0.48) * active.vol;
-            const chPct = (ch / active.price * 100).toFixed(3);
-            const chEl = document.getElementById('priceChange');
-            chEl.textContent = (ch >= 0 ? '+' : '') + ch.toFixed(5) + ' (' + (ch >= 0 ? '+' : '') + chPct + '%)';
-            chEl.className = 'price-change-big ' + (ch >= 0 ? 'up' : 'down');
-            
-            drawChart();
-            updateAI();
-            renderWatchlist();
-        }
-        
-        // ================== INIT ==================
-        function init() {
+
+        // ==================== INIT ====================
+        window.onload = function() {
+            loadTradingViewChart();
             renderWatchlist();
             renderNews();
             renderCalendar();
             renderSessions();
-            updateAll();
-            
+            updateAI();
+
+            // Auto update
             setInterval(() => {
-                // Update prices
-                pairs.forEach(p => {
-                    p.price += (Math.random() - 0.48) * p.vol * 0.3;
-                });
-                updateAll();
-            }, 2000);
-        }
-        
-        init();
+                pairs.forEach(p => p.price += (Math.random() - 0.48) * p.vol * 0.3);
+                renderWatchlist();
+                updateAI();
+            }, 3000);
+        };
     </script>
 </body>
 </html>
